@@ -109,9 +109,9 @@ if __name__=="__main__":
     # Turning learning rate
     tuning_hyperparameters = "lr"
     configs = [
-        {'label': 'lr_01',  'lr': 0.1,  'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'lr_005', 'lr': 0.05, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'lr_001', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'lr_01',  'lr': 0.1,  'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 30},
+        {'label': 'lr_005', 'lr': 0.05, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 30},
+        {'label': 'lr_001', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 30},
     ]
 
 
