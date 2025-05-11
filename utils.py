@@ -4,7 +4,7 @@ from typing import Optional, Dict
 import torch
 from torchvision.datasets import CIFAR100
 from torchvision import transforms
-from torch.utils.data import random_split
+from torch.utils.data import random_split, DataLoader
 
 # CIFAR-100 normalization constants
 MEAN = (0.5071, 0.4865, 0.4409)
@@ -14,68 +14,83 @@ def load_cifar100_datasets(
     data_dir: str,
     augment: bool = True,
     val_split: Optional[int] = 5000,
-    seed: int = 42
-) -> Dict[str, torch.utils.data.Dataset]:
+    seed: int = 42,
+    batch_size: int = 128,
+    num_workers: int = 4,
+    pin_memory: bool = True
+) -> Dict[str, DataLoader]:
     """
-    Load CIFAR-100 train/val/test splits, applying exactly one random augmentation per image when augment=True.
+    Load CIFAR-100 train/val/test splits with optional basic augmentation,
+    and wrap them in DataLoader objects.
 
     Args:
         data_dir: path to download/store CIFAR-100
-        augment: if True, wrap each train image in a RandomChoice of augmentations
-        val_split: number of samples to hold out from train for validation;
-                   if None or 0, no validation split is performed
+        augment: if True, apply exactly one random augmentation per train image
+        val_split: number of samples to hold out from train for validation; 
+                   if <=0 or None, no validation split
         seed: random seed for reproducible split
+        batch_size: batch size for DataLoader
+        num_workers: number of worker processes for data loading
+        pin_memory: whether to pin memory in DataLoader
 
     Returns:
-        A dict with keys 'train', 'val' (if val_split), and 'test',
-        each mapping to a torch.utils.data.Dataset.
+        A dict with keys 'train', 'val' (nếu val_split>0), và 'test',
+        mỗi key mapping tới một torch.utils.data.DataLoader.
     """
-    # Normalize transform
+    # 1) Chuẩn hóa – dùng chung cho val/test
     normalize = transforms.Normalize(mean=MEAN, std=STD)
-    common_transforms = transforms.Compose([
+    common_tf = transforms.Compose([
         transforms.ToTensor(),
         normalize
     ])
 
+    # 2) Augmentation cho train (RandomChoice giữa các phép cơ bản)
     if augment:
-        # Exactly one of these augmentations will be applied per image
-        augmentation = transforms.RandomChoice([
+        aug = transforms.RandomChoice([
             transforms.RandomHorizontalFlip(p=1.0),
             transforms.RandomRotation(degrees=15),
             transforms.RandomCrop(32, padding=4),
-            transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1),
-            transforms.RandomAffine(degrees=0, translate=(0.1,0.1), scale=(0.9,1.1)),
-            transforms.RandomPerspective(distortion_scale=0.2, p=1.0),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2)
         ])
-        train_transforms = transforms.Compose([
-            augmentation,
+        train_tf = transforms.Compose([
+            aug,
             transforms.ToTensor(),
             normalize
         ])
     else:
-        train_transforms = common_transforms
+        train_tf = common_tf
 
-    # Download datasets
-    full_train = CIFAR100(root=data_dir, train=True,  download=True, transform=train_transforms)
-    test_set   = CIFAR100(root=data_dir, train=False, download=True, transform=common_transforms)
+    # 3) Tải dataset
+    full_train = CIFAR100(root=data_dir, train=True, download=True, transform=train_tf)
+    test_set   = CIFAR100(root=data_dir, train=False, download=True, transform=common_tf)
 
-    # Create validation split if requested
+    # 4) Tách validation nếu cần
+    datasets: Dict[str, torch.utils.data.Dataset] = {}
     if val_split and val_split > 0:
-        train_size = len(full_train) - val_split
+        train_n = len(full_train) - val_split
         train_set, val_set = random_split(
             full_train,
-            [train_size, val_split],
+            [train_n, val_split],
             generator=torch.Generator().manual_seed(seed)
         )
-        # override transform for validation
-        val_set.dataset.transform = common_transforms
-        return {
-            'train': train_set,
-            'val'  : val_set,
-            'test' : test_set
-        }
 
-    return {
-        'train': full_train,
-        'test' : test_set
-    }
+        val_set.dataset.transform = common_tf
+        datasets['train'] = train_set
+        datasets['val']   = val_set
+    else:
+        datasets['train'] = full_train
+
+    datasets['test'] = test_set
+
+    # 5) Bọc thành DataLoader
+    loaders: Dict[str, DataLoader] = {}
+    for split, ds in datasets.items():
+        loaders[split] = DataLoader(
+            ds,
+            batch_size=batch_size,
+            shuffle=(split == 'train'),
+            num_workers=num_workers,
+            pin_memory=pin_memory
+        )
+
+    return loaders
