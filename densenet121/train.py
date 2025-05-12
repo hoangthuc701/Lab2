@@ -184,13 +184,23 @@ if __name__=="__main__":
 
 
     # Turning optimizers
-    tuning_hyperparameters = "opt"
+    # tuning_hyperparameters = "opt"
+    # configs = [
+    #     {'label': 'opt_sgd',      'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'opt_adam',     'lr': 0.01,'batch_size': 128, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'opt_adamw',    'lr': 0.01,'batch_size': 128, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'opt_rmsprop',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50},
+    # ]
+
+    # Turning weight decay
+    tuning_hyperparameters = "wd"
     configs = [
-        {'label': 'opt_sgd',      'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'opt_adam',     'lr': 0.01,'batch_size': 128, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'opt_adamw',    'lr': 0.01,'batch_size': 128, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'opt_rmsprop',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50},
+        {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50},
+        {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50},
+
     ]
 
     for config in configs:
