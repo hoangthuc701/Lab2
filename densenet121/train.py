@@ -24,6 +24,19 @@ def train_epoch(model, loader, criterion, optimizer, device):
         n += x.size(0)
     return total_loss/n, total_acc/n
 
+def val_epoch(model, loader, criterion, device):
+    model.eval()
+    total_loss = 0; total_acc = 0; n = 0
+    with torch.no_grad():
+        for x, y in loader:
+            x, y = x.to(device), y.to(device)
+            logits = model(x)
+            loss = criterion(logits, y)
+            total_loss += loss.item() * x.size(0)
+            total_acc += accuracy_topk(logits, y, (1,))[0].item() * x.size(0) / 100
+            n += x.size(0)
+    return total_loss / n, total_acc / n
+
 def save_logs(stats, label, tuning_hyperparameters):
     all_log_path = f"densenet121/logs/all_experiments_{tuning_hyperparameters}.csv"
     os.makedirs("densenet121/logs", exist_ok=True)
@@ -68,7 +81,7 @@ def plot_all_results(tuning_hyperparameters):
 def run_experiment(tuning_hyperparameters, config):
     print(f"Running config: {config['label']}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    loaders = load_cifar100_datasets("data/", batch_size=config['batch_size'], num_workers=2, augment=False, val_split=None)
+    loaders = load_cifar100_datasets("data/", batch_size=config['batch_size'], num_workers=2, augment=False, val_split=None, val_split=5000)
     model = build_densenet121(pretrained=True).to(device)
     criterion = nn.CrossEntropyLoss()
 
@@ -82,8 +95,14 @@ def run_experiment(tuning_hyperparameters, config):
     stats = {'train_loss': [], 'train_acc': []}
     start_time = time.time()
 
+    # Early stopping config
+    patience = 5
+    best_val_loss = float("inf")
+    trigger_times = 0
+
     for epoch in range(1, config['epochs'] + 1):
         tr_loss, tr_acc = train_epoch(model, loaders['train'], criterion, optimizer, device)
+        val_loss, val_acc = val_epoch(model, loaders['val'], criterion, device)
         scheduler.step()
 
         print(f"[{config['label']}] Epoch {epoch}: "
@@ -91,17 +110,33 @@ def run_experiment(tuning_hyperparameters, config):
         
         stats['train_loss'].append(tr_loss)
         stats['train_acc'].append(tr_acc)
+        stats['val_loss'].append(val_loss)
+        stats['val_acc'].append(val_acc)
+
+        # Early stopping logic
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            trigger_times = 0
+             # Save model checkpoint
+            os.makedirs("densenet121/models", exist_ok=True)
+            torch.save(model.state_dict(), f"densenet121/models/{config['label']}.pth")
+        else:
+            trigger_times += 1
+            if trigger_times >= patience:
+                print(f"⛔ Early stopping triggered at epoch {epoch}")
+                break
 
     end_time = time.time()
     duration = end_time - start_time
     print(f"⏱ Total training time for {config['label']}: {duration:.2f} seconds")
 
-    # Save model checkpoint
-    os.makedirs("densenet121/models", exist_ok=True)
-    torch.save(model.state_dict(), f"densenet121/models/{config['label']}.pth")
-
     # Save training stats
     save_logs(stats, config['label'], tuning_hyperparameters)
+    with open(f"densenet121/logs/train_times_{tuning_hyperparameters}.csv", "a", newline="") as f:
+        writer = csv.writer(f)
+        if os.stat(f"densenet121/logs/train_times_{tuning_hyperparameters}.csv").st_size == 0:
+            writer.writerow(["label", "duration_seconds", "early_stop_epoch"])
+        writer.writerow([config['label'], round(duration, 2), epoch])
 
 
 if __name__=="__main__":
