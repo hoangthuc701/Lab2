@@ -1,23 +1,43 @@
-# eval.py
+import os
 import torch
 from .model import build_densenet121
 from dataset_loader import load_cifar100_datasets
 from utils import compute_classification_metrics
 
+def evaluate_all_models(tuning_hyperparameters):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_dir = "densenet121/models"
+
+    # Load test set
+    loaders = load_cifar100_datasets("data/", batch_size=128, num_workers=4, augment=False, val_split=0)
+    test_loader = loaders['test']
+
+    # Loop through all model files with keyword
+    for file in os.listdir(model_dir):
+        if tuning_hyperparameters in file and file.endswith(".pth"):
+            label = file.replace(".pth", "")
+            model_path = os.path.join(model_dir, file)
+            print(f"\n🔍 Evaluating: {label}")
+
+            # Load model
+            model = build_densenet121(pretrained=False).to(device)
+            model.load_state_dict(torch.load(model_path))
+            model.eval()
+
+            # Evaluate
+            results = compute_classification_metrics(model, test_loader, device)
+
+            # Print results
+            print(f"Top-1 Accuracy: {results['top1']:.2f}%")
+            print(f"Top-5 Accuracy: {results['top5']:.2f}%")
+            print(f"Precision:      {results['precision']:.4f}")
+            print(f"Recall:         {results['recall']:.4f}")
+            print(f"F1-score:       {results['f1']:.4f}")
+            print(f"Confusion Matrix:\n{results['cm']}")
+
 def main():
-    device = torch.device("cuda")
-    model = build_densenet121(pretrained=False).to(device)
-    model.load_state_dict(torch.load("densenet121/models/lr_005.pth"))
-    loaders = load_cifar100_datasets("data/", batch_size=128,
-                              num_workers=4, augment=False, val_split=0)
-    results = compute_classification_metrics(model, loaders['test'], device)
-    print(f"Top-1 Acc: {results['top1']:.2f}%")
-    print(f"Top-5 Acc: {results['top5']:.2f}%")
-    print(f"Precision: {results['precision']:.4f}")
-    print(f"Recall:    {results['recall']:.4f}")
-    print(f"F1-score:  {results['f1']:.4f}")
-    print("Confusion Matrix:")
-    print(results['cm'])
+    tuning_hyperparameters = "lr" 
+    evaluate_all_models(tuning_hyperparameters)
 
 if __name__ == "__main__":
     main()
