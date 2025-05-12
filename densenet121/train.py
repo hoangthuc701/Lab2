@@ -157,13 +157,20 @@ def run_experiment(tuning_hyperparameters, config):
 if __name__=="__main__":
 
     # Turning learning rate
-    tuning_hyperparameters = "lr"
-    configs = [
-        {'label': 'lr_01',  'lr': 0.1,  'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'lr_005', 'lr': 0.05, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'lr_001', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-    ]
+    # tuning_hyperparameters = "lr"
+    # configs = [
+    #     {'label': 'lr_01',  'lr': 0.1,  'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'lr_005', 'lr': 0.05, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'lr_001', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    # ]
 
+    # Turning batch size
+    tuning_hyperparameters = "bs"
+    configs = [
+        {'label': 'bs_128','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'bs_64', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'bs_32', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    ]
 
     for config in configs:
         run_experiment(tuning_hyperparameters, config)
