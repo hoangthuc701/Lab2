@@ -110,7 +110,7 @@ def run_experiment(tuning_hyperparameters, config):
     start_time = time.time()
 
     # Early stopping config
-    patience = 0
+    patience = 5
     best_val_loss = float("inf")
     trigger_times = 0
 
