@@ -57,31 +57,45 @@ def save_logs(stats, label, tuning_hyperparameters):
             writer.writerow([label, i+1, stats['train_loss'][i], stats['train_acc'][i]])
 
 def plot_all_results(tuning_hyperparameters):
+    # Load data
     df = pd.read_csv(f"densenet121/logs/all_experiments_{tuning_hyperparameters}.csv")
     labels = df['label'].unique()
 
-    plt.figure()
+    # Load early stopping info
+    stop_df = pd.read_csv(f"densenet121/logs/train_times_{tuning_hyperparameters}.csv")
+
+    # --- Plot Train Loss ---
+    plt.figure(figsize=(10, 5))
     for label in labels:
         sub = df[df['label'] == label]
+        stop_epoch = stop_df[stop_df['label'] == label]['early_stop_epoch'].values[0]
+        y_val = sub[sub['epoch'] == stop_epoch]['train_loss'].values[0]
         plt.plot(sub['epoch'], sub['train_loss'], label=label)
+        plt.scatter([stop_epoch], [y_val], color='red', marker='x', zorder=5)
     plt.title("Train Loss vs Epochs")
     plt.xlabel("Epochs"); plt.ylabel("Loss")
     plt.legend(); plt.grid()
+    plt.tight_layout()
     plt.savefig(f"densenet121/logs/all_loss_plot_{tuning_hyperparameters}.png")
 
-    plt.figure()
+    # --- Plot Train Accuracy ---
+    plt.figure(figsize=(10, 5))
     for label in labels:
         sub = df[df['label'] == label]
+        stop_epoch = stop_df[stop_df['label'] == label]['early_stop_epoch'].values[0]
+        y_val = sub[sub['epoch'] == stop_epoch]['train_acc'].values[0]
         plt.plot(sub['epoch'], sub['train_acc'], label=label)
+        plt.scatter([stop_epoch], [y_val], color='red', marker='x', zorder=5)
     plt.title("Train Accuracy vs Epochs")
     plt.xlabel("Epochs"); plt.ylabel("Accuracy (%)")
     plt.legend(); plt.grid()
+    plt.tight_layout()
     plt.savefig(f"densenet121/logs/all_acc_plot_{tuning_hyperparameters}.png")
 
 def run_experiment(tuning_hyperparameters, config):
     print(f"Running config: {config['label']}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    loaders = load_cifar100_datasets("data/", batch_size=config['batch_size'], num_workers=2, augment=False, val_split=None, val_split=5000)
+    loaders = load_cifar100_datasets("data/", batch_size=config['batch_size'], num_workers=2, augment=False, val_split=5000)
     model = build_densenet121(pretrained=True).to(device)
     criterion = nn.CrossEntropyLoss()
 
@@ -92,11 +106,11 @@ def run_experiment(tuning_hyperparameters, config):
 
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config['epochs'])
     
-    stats = {'train_loss': [], 'train_acc': []}
+    stats = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
     start_time = time.time()
 
     # Early stopping config
-    patience = 5
+    patience = 0
     best_val_loss = float("inf")
     trigger_times = 0
 
@@ -106,8 +120,9 @@ def run_experiment(tuning_hyperparameters, config):
         scheduler.step()
 
         print(f"[{config['label']}] Epoch {epoch}: "
-              f"Train {tr_loss:.4f}/{tr_acc:.2f}% | ")
-        
+              f"Train {tr_loss:.4f}/{tr_acc:.2f}% | "
+              f"Val {val_loss:.4f}/{val_acc:.2f}%")
+
         stats['train_loss'].append(tr_loss)
         stats['train_acc'].append(tr_acc)
         stats['val_loss'].append(val_loss)
