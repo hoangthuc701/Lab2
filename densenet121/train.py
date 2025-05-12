@@ -99,10 +99,20 @@ def run_experiment(tuning_hyperparameters, config):
     model = build_densenet121(pretrained=True).to(device)
     criterion = nn.CrossEntropyLoss()
 
-    if config['optimizer'] == 'sgd':
+    opt = config['optimizer'].lower()
+
+    if opt == 'sgd':
+        optimizer = optim.SGD(model.parameters(), lr=config['lr'], momentum=0.0, weight_decay=config['weight_decay'])  # mặc định không momentum
+    elif opt == 'momentum':
         optimizer = optim.SGD(model.parameters(), lr=config['lr'], momentum=0.9, weight_decay=config['weight_decay'])
-    elif config['optimizer'] == 'adam':
+    elif opt == 'adam':
         optimizer = optim.Adam(model.parameters(), lr=config['lr'], weight_decay=config['weight_decay'])
+    elif opt == 'adamw':
+        optimizer = optim.AdamW(model.parameters(), lr=config['lr'], weight_decay=config['weight_decay'])
+    elif opt == 'rmsprop':
+        optimizer = optim.RMSprop(model.parameters(), lr=config['lr'], momentum=0.9, weight_decay=config['weight_decay'])
+    else:
+        raise ValueError(f"Unsupported optimizer: {config['optimizer']}")
 
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config['epochs'])
     
@@ -165,11 +175,22 @@ if __name__=="__main__":
     # ]
 
     # Turning batch size
-    tuning_hyperparameters = "bs"
+    # tuning_hyperparameters = "bs"
+    # configs = [
+    #     {'label': 'bs_128','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'bs_64', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'bs_32', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    # ]
+
+
+    # Turning optimizers
+    tuning_hyperparameters = "opt"
     configs = [
-        {'label': 'bs_128','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'bs_64', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'bs_32', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'opt_sgd',      'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'opt_adam',     'lr': 0.01,'batch_size': 128, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'opt_adamw',    'lr': 0.01,'batch_size': 128, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50},
+        {'label': 'opt_rmsprop',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50},
     ]
 
     for config in configs:
