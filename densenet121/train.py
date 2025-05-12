@@ -28,7 +28,7 @@ def val_epoch(model, loader, criterion, device):
     model.eval()
     total_loss = 0; total_acc = 0; n = 0
     with torch.no_grad():
-        for x, y in loader:
+        for x, y in tqdm(loader, desc="Val"):
             x, y = x.to(device), y.to(device)
             logits = model(x)
             loss = criterion(logits, y)
