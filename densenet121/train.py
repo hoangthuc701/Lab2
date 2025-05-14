@@ -10,6 +10,7 @@ from utils import accuracy_topk
 import matplotlib.pyplot as plt
 import pandas as pd
 import time
+from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR, ReduceLROnPlateau
 
 def train_epoch(model, loader, criterion, optimizer, device):
     model.train()
@@ -114,7 +115,13 @@ def run_experiment(tuning_hyperparameters, config):
     else:
         raise ValueError(f"Unsupported optimizer: {config['optimizer']}")
 
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config['epochs'])
+    if config['scheduler'] == 'sched_cosine':
+        scheduler = CosineAnnealingLR(optimizer, T_max=config['epochs'])
+    elif config['scheduler'] == 'sched_step':
+        # Mặc định step=30, gamma=0.1 nếu không cung cấp
+        scheduler = StepLR(optimizer, step_size=config.get('step', 30), gamma=config.get('gamma', 0.1))
+    elif config['scheduler'] == 'sched_plateau':
+        scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10)
     
     stats = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
     start_time = time.time()
@@ -127,7 +134,11 @@ def run_experiment(tuning_hyperparameters, config):
     for epoch in range(1, config['epochs'] + 1):
         tr_loss, tr_acc = train_epoch(model, loaders['train'], criterion, optimizer, device)
         val_loss, val_acc = val_epoch(model, loaders['val'], criterion, device)
-        scheduler.step()
+        
+        if config['scheduler'] == 'sched_plateau':
+            scheduler.step(val_loss)
+        else:
+            scheduler.step()
 
         print(f"[{config['label']}] Epoch {epoch}: "
               f"Train {tr_loss:.4f}/{tr_acc:.2f}% | "
@@ -194,13 +205,22 @@ if __name__=="__main__":
     # ]
 
     # Turning weight decay
-    tuning_hyperparameters = "wd"
-    configs = [
-        {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50},
-        {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50},
-        {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-        {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50},
+    # tuning_hyperparameters = "wd"
+    # configs = [
+    #     {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50},
+    #     {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50},
+    #     {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
+    #     {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50},
 
+    # ]
+
+
+    # Turning scheduler
+    tuning_hyperparameters = "sched"
+    configs = [
+        # {'label': 'sched_cosine',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_cosine'},
+        # {'label': 'sched_step',     'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_step'},
+        {'label': 'sched_plateau',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_plateau'},
     ]
 
     for config in configs:
