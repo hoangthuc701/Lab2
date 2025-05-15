@@ -9,7 +9,7 @@ def evaluate_all_models(tuning_hyperparameters):
     model_dir = "densenet121/models"
 
     # Load test set
-    loaders = load_cifar100_datasets("data/", batch_size=128, num_workers=4, augment=False, val_split=0)
+    loaders = load_cifar100_datasets("data/", batch_size=128, num_workers=4, augment="aug_none", val_split=0)
     test_loader = loaders['test']
 
     # Loop through all model files with keyword
@@ -36,7 +36,7 @@ def evaluate_all_models(tuning_hyperparameters):
             print(f"Confusion Matrix:\n{results['cm']}")
 
 def main():
-    tuning_hyperparameters = "sched"
+    tuning_hyperparameters = "aug"
     evaluate_all_models(tuning_hyperparameters)
 
 if __name__ == "__main__":
