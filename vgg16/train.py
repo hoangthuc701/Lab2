@@ -176,22 +176,22 @@ if __name__ == "__main__":
     # ]
 
     # Turning batch size
-    tuning_hyperparameters = "bs"
-    configs = [
-        {'label': 'bs_128','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'bs_64', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'bs_32', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-    ]
+    # tuning_hyperparameters = "bs"
+    # configs = [
+    #     {'label': 'bs_128','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'bs_64', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'bs_32', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    # ]
 
     # Turning optimizers
-    # tuning_hyperparameters = "opt"
-    # configs = [
-    #     {'label': 'opt_sgd',      'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50},
-    #     {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50},
-    #     {'label': 'opt_adam',     'lr': 0.01,'batch_size': 128, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50},
-    #     {'label': 'opt_adamw',    'lr': 0.01,'batch_size': 128, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50},
-    #     {'label': 'opt_rmsprop',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50},
-    # ]
+    tuning_hyperparameters = "opt"
+    configs = [
+        {'label': 'opt_sgd',      'lr': 0.01, 'batch_size': 32, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'opt_adam',     'lr': 0.01,'batch_size': 32, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'opt_adamw',    'lr': 0.01,'batch_size': 32, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'opt_rmsprop',  'lr': 0.01, 'batch_size': 32, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    ]
 
     # Turning weight decay
     # tuning_hyperparameters = "wd"
