@@ -1,0 +1,6 @@
+label,duration_seconds,early_stop_epoch
+opt_sgd,534.41,17
+opt_momentum,442.82,14
+opt_adam,1245.15,39
+opt_adamw,767.62,24
+opt_rmsprop,383.09,12

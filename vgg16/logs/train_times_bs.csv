@@ -1,0 +1,4 @@
+label,duration_seconds,early_stop_epoch
+bs_128,523.68,15
+bs_64,655.98,16
+bs_32,896.02,16

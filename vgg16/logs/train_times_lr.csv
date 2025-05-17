@@ -1,0 +1,4 @@
+label,duration_seconds,early_stop_epoch
+lr_01,517.77,15
+lr_005,448.1,13
+lr_001,549.47,16
