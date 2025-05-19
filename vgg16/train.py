@@ -184,24 +184,23 @@ if __name__ == "__main__":
     # ]
 
     # Turning optimizers
-    tuning_hyperparameters = "opt"
-    configs = [
-        {'label': 'opt_sgd',      'lr': 0.05, 'batch_size': 64, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'opt_adam',     'lr': 1e-3,'batch_size': 64, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'opt_adamw',    'lr': 5e-4,'batch_size': 64, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'opt_rmsprop',  'lr': 1e-3, 'batch_size': 64, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-    ]
+    # tuning_hyperparameters = "opt"
+    # configs = [
+    #     {'label': 'opt_sgd',      'lr': 0.05, 'batch_size': 64, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_adam',     'lr': 1e-3,'batch_size': 64, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_adamw',    'lr': 5e-4,'batch_size': 64, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_rmsprop',  'lr': 1e-3, 'batch_size': 64, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    # ]
 
     # Turning weight decay
-    # tuning_hyperparameters = "wd"
-    # configs = [
-    #     {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50},
-    #     {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50},
-    #     {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50},
-    #     {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50},
-
-    # ]
+    tuning_hyperparameters = "wd"
+    configs = [
+        {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine' },
+        {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    ]
 
     # Turning scheduler
     # tuning_hyperparameters = "sched"
