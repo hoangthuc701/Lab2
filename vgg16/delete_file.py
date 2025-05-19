@@ -11,7 +11,7 @@ def delete_files_with_keyword(folder_path, keyword):
     return deleted_files
 
 # Gán tham số cần xóa (ví dụ: "aug", "lr", "batch", ...)
-tuning_hyperparameters = "lr"
+tuning_hyperparameters = "opt"
 
 # Thư mục cần kiểm tra
 folders = ["vgg16/logs", "vgg16/models"]
