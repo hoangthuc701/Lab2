@@ -92,7 +92,7 @@ def run_experiment(tuning_hyperparameters, config):
     print(f"Running config: {config['label']}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     loaders = load_cifar100_datasets("data/", batch_size=config['batch_size'], num_workers=2, augment=config['aug_type'], val_split=5000)
-    model = build_vgg16(pretrained=True).to(device)
+    model = build_vgg16(pretrained=config['pretrained']).to(device)
     criterion = nn.CrossEntropyLoss()
 
     opt = config['optimizer'].lower()
@@ -211,17 +211,24 @@ if __name__ == "__main__":
     # ]
 
 
-    tuning_hyperparameters = "aug"
+    # tuning_hyperparameters = "aug"
+    # configs = [
+    #     {'label': 'aug_none',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_crop',         'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_crop', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip_crop',    'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip_crop_jitter',    'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_jitter', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip_crop_erasing',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_erasing', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_autoaugment',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_autoaugment', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_random_combo',        'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': "aug_random_combo", 'scheduler': 'sched_cosine'},
+    #     {'label': "aug_random_only",         "lr": 0.01, "batch_size": 128, "optimizer": "sgd", "weight_decay": 1e-4, "epochs": 50, "aug_type": "aug_random_only", "scheduler": "sched_cosine"},
+    # ]
+
+    # Tuning retrain model and fine-tune model
+    tuning_hyperparameters = "pretrained"
     configs = [
-        {'label': 'aug_none',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'aug_flip',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip', 'scheduler': 'sched_cosine'},
-        {'label': 'aug_crop',         'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_crop', 'scheduler': 'sched_cosine'},
-        {'label': 'aug_flip_crop',    'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop', 'scheduler': 'sched_cosine'},
-        {'label': 'aug_flip_crop_jitter',    'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_jitter', 'scheduler': 'sched_cosine'},
-        {'label': 'aug_flip_crop_erasing',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_erasing', 'scheduler': 'sched_cosine'},
-        {'label': 'aug_autoaugment',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_autoaugment', 'scheduler': 'sched_cosine'},
-        {'label': 'aug_random_combo',        'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': "aug_random_combo", 'scheduler': 'sched_cosine'},
-        {'label': "aug_random_only",         "lr": 0.01, "batch_size": 128, "optimizer": "sgd", "weight_decay": 1e-4, "epochs": 50, "aug_type": "aug_random_only", "scheduler": "sched_cosine"},
+        {'label': 'pretrained', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine', 'pretrained': True},
+        {'label': 'pretrained_not', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine', 'pretrained': False},
     ]
 
     for config in configs:
