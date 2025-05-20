@@ -194,21 +194,21 @@ if __name__ == "__main__":
     # ]
 
     # Turning weight decay
-    tuning_hyperparameters = "wd"
-    configs = [
-        {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine' },
-        {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-        {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-    ]
+    # tuning_hyperparameters = "wd"
+    # configs = [
+    #     {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine' },
+    #     {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    # ]
 
     # Turning scheduler
-    # tuning_hyperparameters = "sched"
-    # configs = [
-    #     {'label': 'sched_cosine',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_cosine'},
-    #     {'label': 'sched_step',     'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_step'},
-    #     {'label': 'sched_plateau',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_plateau'},
-    # ]
+    tuning_hyperparameters = "sched"
+    configs = [
+        {'label': 'sched_cosine',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_cosine', 'aug_type': 'aug_none'},
+        {'label': 'sched_step',     'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_step', 'aug_type': 'aug_none'},
+        {'label': 'sched_plateau',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_plateau', 'aug_type': 'aug_none'},
+    ]
 
 
     # tuning_hyperparameters = "aug"
