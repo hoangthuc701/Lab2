@@ -1,0 +1,4 @@
+label,duration_seconds,early_stop_epoch
+sched_cosine,639.35,18
+sched_step,590.62,17
+sched_plateau,553.11,16
