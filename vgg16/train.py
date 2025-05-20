@@ -203,26 +203,26 @@ if __name__ == "__main__":
     # ]
 
     # Turning scheduler
-    tuning_hyperparameters = "sched"
-    configs = [
-        {'label': 'sched_cosine',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_cosine', 'aug_type': 'aug_none'},
-        {'label': 'sched_step',     'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_step', 'aug_type': 'aug_none'},
-        {'label': 'sched_plateau',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_plateau', 'aug_type': 'aug_none'},
-    ]
-
-
-    # tuning_hyperparameters = "aug"
+    # tuning_hyperparameters = "sched"
     # configs = [
-    #     {'label': 'aug_none',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
-    #     {'label': 'aug_flip',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip', 'scheduler': 'sched_cosine'},
-    #     {'label': 'aug_crop',         'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_crop', 'scheduler': 'sched_cosine'},
-    #     {'label': 'aug_flip_crop',    'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop', 'scheduler': 'sched_cosine'},
-    #     {'label': 'aug_flip_crop_jitter',    'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_jitter', 'scheduler': 'sched_cosine'},
-    #     {'label': 'aug_flip_crop_erasing',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_erasing', 'scheduler': 'sched_cosine'},
-    #     {'label': 'aug_autoaugment',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_autoaugment', 'scheduler': 'sched_cosine'},
-    #     {'label': 'aug_random_combo',        'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': "aug_random_combo", 'scheduler': 'sched_cosine'},
-    #     {'label': "aug_random_only",         "lr": 0.01, "batch_size": 128, "optimizer": "sgd", "weight_decay": 1e-4, "epochs": 50, "aug_type": "aug_random_only", "scheduler": "sched_cosine"},
+    #     {'label': 'sched_cosine',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_cosine', 'aug_type': 'aug_none'},
+    #     {'label': 'sched_step',     'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_step', 'aug_type': 'aug_none'},
+    #     {'label': 'sched_plateau',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_plateau', 'aug_type': 'aug_none'},
     # ]
+
+
+    tuning_hyperparameters = "aug"
+    configs = [
+        {'label': 'aug_none',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+        {'label': 'aug_flip',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip', 'scheduler': 'sched_cosine'},
+        {'label': 'aug_crop',         'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_crop', 'scheduler': 'sched_cosine'},
+        {'label': 'aug_flip_crop',    'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop', 'scheduler': 'sched_cosine'},
+        {'label': 'aug_flip_crop_jitter',    'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_jitter', 'scheduler': 'sched_cosine'},
+        {'label': 'aug_flip_crop_erasing',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_erasing', 'scheduler': 'sched_cosine'},
+        {'label': 'aug_autoaugment',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_autoaugment', 'scheduler': 'sched_cosine'},
+        {'label': 'aug_random_combo',        'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': "aug_random_combo", 'scheduler': 'sched_cosine'},
+        {'label': "aug_random_only",         "lr": 0.01, "batch_size": 128, "optimizer": "sgd", "weight_decay": 1e-4, "epochs": 50, "aug_type": "aug_random_only", "scheduler": "sched_cosine"},
+    ]
 
     for config in configs:
         run_experiment(tuning_hyperparameters, config)
