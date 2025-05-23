@@ -27,3 +27,7 @@ lr_0.001_bs_64_epochs_50_wd_0.001_opt_adamw_autoaug,3217.99
 lr_0.001_bs_128_epochs_30_wd_0.0005_opt_sgd_autoaug,1097.61
 lr_0.001_bs_128_epochs_30_wd_0.0005_opt_adamw_autoaug,1572.55
 lr_0.001_bs_128_epochs_30_wd_0.001_opt_sgd_autoaug,934.79
+lr_0.001_bs_128_epochs_30_wd_0.001_opt_adamw_autoaug,1336.39
+lr_0.001_bs_128_epochs_50_wd_0.0005_opt_sgd_autoaug,942.08
+lr_0.001_bs_128_epochs_50_wd_0.0005_opt_adamw_autoaug,1433.23
+lr_0.001_bs_128_epochs_50_wd_0.001_opt_sgd_autoaug,1395.69

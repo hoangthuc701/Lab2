@@ -250,7 +250,7 @@ def run_experiment(tuning_hyperparameters, config):
     stats = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': [], 'f1_score': []}
     best_val_acc = 0.0
     early_stop_counter = 0
-    patience = config.get('patience', 10)
+    patience = config.get('patience', 5)
     best_model_path = f"resnet50/models/{config['label']}_best.pth"
     
     start_time = time.time()
@@ -271,7 +271,7 @@ def run_experiment(tuning_hyperparameters, config):
             optimizer,
             device,
             scaler,
-            accum_steps=config['accum_steps'],
+            accum_steps=1,
             use_mixup=use_mixup,
             mixup_alpha=1.0,
             epoch=epoch
@@ -318,6 +318,8 @@ def run_experiment(tuning_hyperparameters, config):
         os.makedirs(f"resnet50/logs/{config['label']}", exist_ok=True)
         with open(f"resnet50/logs/{config['label']}/epoch_{epoch}_results.json", 'w') as f:
             json.dump(epoch_results, f, indent=4)
+        os.makedirs("resnet50/models", exist_ok=True)
+        torch.save(model_instance.state_dict(), f"resnet50/models/{config['label']}_epoch_{epoch}.pth")
 
     end_time = time.time()
     duration = end_time - start_time
@@ -338,47 +340,115 @@ if __name__ == "__main__":
     
     device, is_cuda = setup_cuda()
     
-    param_grid = {
-        "lr": [0.0005, 0.001, 0.01],
-        "batch_size": [64, 128],
-        "epochs": [30, 50],
-        "weight_decay": [5e-4, 1e-3],
-        "optimizer": ['sgd', 'adamw']
-    }
+    # param_grid = {
+    #     "lr": [0.0005, 0.001, 0.01],
+    #     "batch_size": [64, 128],
+    #     "epochs": [30, 50],
+    #     "weight_decay": [5e-4, 1e-3],
+    #     "optimizer": ['sgd', 'adamw']
+    # }
 
-    # Tạo tất cả tổ hợp tham số
-    param_combinations = [
-        dict(zip(param_grid.keys(), values))
-        for values in product(*param_grid.values())
+    # # Tạo tất cả tổ hợp tham số
+    # param_combinations = [
+    #     dict(zip(param_grid.keys(), values))
+    #     for values in product(*param_grid.values())
+    # ]
+
+    # tuning_hyperparameters = "lr_aug_report"
+    # best_val_acc_overall = 0.0
+    # best_config_overall = None
+
+    # for param in param_combinations:
+    #     config = param.copy()
+    #     config['label'] = (
+    #         f"lr_{config['lr']}_bs_{config['batch_size']}_"
+    #         f"epochs_{config['epochs']}_wd_{config['weight_decay']}_"
+    #         f"opt_{config['optimizer']}_autoaug"
+    #     )
+    #     config['aug_type'] = 'aug_autoaugment'
+    #     config['patience'] = 10
+    #     config['accum_steps'] = 1
+
+    #     best_val_acc = run_experiment(tuning_hyperparameters, config)
+        
+    #     if best_val_acc > best_val_acc_overall:
+    #         best_val_acc_overall = best_val_acc
+    #         best_config_overall = config.copy()
+
+    # plot_all_results(tuning_hyperparameters)
+    
+    # # Lưu cấu hình tốt nhất
+    # if best_config_overall:
+    #     save_best_config(best_config_overall, best_val_acc_overall, tuning_hyperparameters)
+    #     print(f"Best configuration: {best_config_overall}")
+    #     print(f"Best validation accuracy: {best_val_acc_overall*100:.2f}%")
+    
+    # print("All experiments completed.")
+     # Turning learning rate
+    tuning_hyperparameters = "lr"
+    configs = [
+        {'label': 'best_model',  'lr': 0.001,  'batch_size': 64, 'optimizer': 'adamw', 'weight_decay': 5e-4, 'epochs': 30, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'lr_005', 'lr': 0.05, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'lr_001', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
     ]
 
-    tuning_hyperparameters = "lr_aug_report"
-    best_val_acc_overall = 0.0
-    best_config_overall = None
+    # Turning batch size
+    # tuning_hyperparameters = "bs"
+    # configs = [
+    #     {'label': 'bs_128','lr': 0.01, 'batch_size': 128, 'optimizer': 'adamw', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'bs_64', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'adamw', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'bs_32', 'lr': 0.01, 'batch_size': 32, 'optimizer': 'adamw', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    # ]
 
-    for param in param_combinations:
-        config = param.copy()
-        config['label'] = (
-            f"lr_{config['lr']}_bs_{config['batch_size']}_"
-            f"epochs_{config['epochs']}_wd_{config['weight_decay']}_"
-            f"opt_{config['optimizer']}_autoaug"
-        )
-        config['aug_type'] = 'aug_autoaugment'
-        config['patience'] = 10
-        config['accum_steps'] = 1
+    # Turning optimizers
+    # tuning_hyperparameters = "opt"
+    # configs = [
+    #     {'label': 'opt_sgd',      'lr': 0.05, 'batch_size': 64, 'optimizer': 'sgd',      'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_momentum', 'lr': 0.01, 'batch_size': 64, 'optimizer': 'momentum', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_adam',     'lr': 1e-3,'batch_size': 64, 'optimizer': 'adam',     'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_adamw',    'lr': 5e-4,'batch_size': 64, 'optimizer': 'adamw',    'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'opt_rmsprop',  'lr': 1e-3, 'batch_size': 64, 'optimizer': 'rmsprop',  'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    # ]
 
-        best_val_acc = run_experiment(tuning_hyperparameters, config)
-        
-        if best_val_acc > best_val_acc_overall:
-            best_val_acc_overall = best_val_acc
-            best_config_overall = config.copy()
+    # Turning weight decay
+    # tuning_hyperparameters = "wd"
+    # configs = [
+    #     {'label': 'wd_0',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 0.0,  'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'wd_5e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 5e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine' },
+    #     {'label': 'wd_1e4','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'wd_1e3','lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-3, 'epochs': 50,  'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    # ]
 
+    # Turning scheduler
+    # tuning_hyperparameters = "sched"
+    # configs = [
+    #     {'label': 'sched_cosine',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_cosine', 'aug_type': 'aug_none'},
+    #     {'label': 'sched_step',     'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_step', 'aug_type': 'aug_none'},
+    #     {'label': 'sched_plateau',  'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'scheduler': 'sched_plateau', 'aug_type': 'aug_none'},
+    # ]
+
+
+    # tuning_hyperparameters = "aug"
+    # configs = [
+    #     {'label': 'aug_none',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_crop',         'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_crop', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip_crop',    'lr': 0.01, 'batch_size':  128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip_crop_jitter',    'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_jitter', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_flip_crop_erasing',   'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_flip_crop_erasing', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_autoaugment',         'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_autoaugment', 'scheduler': 'sched_cosine'},
+    #     {'label': 'aug_random_combo',        'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': "aug_random_combo", 'scheduler': 'sched_cosine'},
+    #     {'label': "aug_random_only",         "lr": 0.01, "batch_size": 128, "optimizer": "sgd", "weight_decay": 1e-4, "epochs": 50, "aug_type": "aug_random_only", "scheduler": "sched_cosine"},
+    # ]
+
+    # Tuning retrain model and fine-tune model
+    # tuning_hyperparameters = "pretrained"
+    # configs = [
+    #     {'label': 'pretrained', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine', 'pretrained': True},
+    #     {'label': 'pretrained_not', 'lr': 0.01, 'batch_size': 128, 'optimizer': 'sgd', 'weight_decay': 1e-4, 'epochs': 50, 'aug_type': 'aug_none','scheduler': 'sched_cosine', 'pretrained': False},
+    # ]
+
+    for config in configs:
+        run_experiment(tuning_hyperparameters, config)
     plot_all_results(tuning_hyperparameters)
-    
-    # Lưu cấu hình tốt nhất
-    if best_config_overall:
-        save_best_config(best_config_overall, best_val_acc_overall, tuning_hyperparameters)
-        print(f"Best configuration: {best_config_overall}")
-        print(f"Best validation accuracy: {best_val_acc_overall*100:.2f}%")
-    
     print("All experiments completed.")
