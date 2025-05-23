@@ -14,7 +14,8 @@ from torch.cuda.amp import autocast, GradScaler
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import numpy as np
 from itertools import product
-
+import matplotlib
+matplotlib.use('Agg')
 # Thêm parent directory vào sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -248,7 +249,7 @@ def run_experiment(tuning_hyperparameters, config):
     stats = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': [], 'f1_score': []}
     best_val_acc = 0.0
     early_stop_counter = 0
-    patience = config.get('patience', 20)
+    patience = config.get('patience', 10)
     best_model_path = f"efficientnetb0/models/{config['label']}_best.pth"
     
     start_time = time.time()
@@ -300,7 +301,7 @@ def run_experiment(tuning_hyperparameters, config):
             print(f"Early stopping triggered at epoch {epoch} (no improvement for {patience} epochs)")
             break
 
-        plot_epoch_results(stats, epoch, config['label'], f"efficientnetb0/logs/{config['label']}")
+        # plot_epoch_results(stats, epoch, config['label'], f"efficientnetb0/logs/{config['label']}")
 
         epoch_results = {
             'epoch': epoch,
@@ -351,6 +352,14 @@ if __name__ == "__main__":
         for values in product(*param_grid.values())
     ]
 
+    completed_configs = [
+        "lr_0.0005_bs_64_epochs_30_wd_0.001_opt_adamw_autoaug",
+        "lr_0.0005_bs_64_epochs_30_wd_0.001_opt_sgd_autoaug",
+        "lr_0.0005_bs_64_epochs_30_wd_0.0005_opt_adamw_autoaug",
+        "lr_0.0005_bs_64_epochs_30_wd_0.0005_opt_sgd_autoaug",
+        "lr_0.0005_bs_64_epochs_50_wd_0.0005_opt_sgd_autoaug"
+    ]
+
     tuning_hyperparameters = "lr_aug_report"
     best_val_acc_overall = 0.0
     best_config_overall = None
@@ -365,6 +374,10 @@ if __name__ == "__main__":
         config['aug_type'] = 'aug_autoaugment'
         config['patience'] = 10
         config['accum_steps'] = 1
+        log_path = os.path.join("efficientnetb0/logs", f"{config['label']}.csv")
+        if (config['label'] in completed_configs or os.path.exists(log_path)):
+            print("Skipping already completed")
+            continue
 
         best_val_acc = run_experiment(tuning_hyperparameters, config)
         
