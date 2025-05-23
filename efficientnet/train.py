@@ -293,8 +293,6 @@ def run_experiment(tuning_hyperparameters, config):
             best_val_acc = val_acc
             early_stop_counter = 0
             os.makedirs("efficientnetb0/models", exist_ok=True)
-            torch.save(model_instance.state_dict(), best_model_path)
-            print(f"Saved best model at epoch {epoch} with val_acc: {best_val_acc*100:.2f}%")
         else:
             early_stop_counter += 1
 
@@ -319,9 +317,6 @@ def run_experiment(tuning_hyperparameters, config):
         os.makedirs(f"efficientnetb0/logs/{config['label']}", exist_ok=True)
         with open(f"efficientnetb0/logs/{config['label']}/epoch_{epoch}_results.json", 'w') as f:
             json.dump(epoch_results, f, indent=4)
-
-        os.makedirs("efficientnetb0/models", exist_ok=True)
-        torch.save(model_instance.state_dict(), f"efficientnetb0/models/{config['label']}_epoch_{epoch}.pth")
 
     end_time = time.time()
     duration = end_time - start_time
