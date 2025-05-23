@@ -1,3 +1,5 @@
 label,duration_seconds
 lr_0.0005_bs_64_epochs_30_wd_0.0005_opt_sgd_autoaug,3569.99
 lr_0.0005_bs_64_epochs_30_wd_0.0005_opt_adamw_autoaug,3548.01
+lr_0.0005_bs_64_epochs_30_wd_0.001_opt_sgd_autoaug,1905.46
+lr_0.0005_bs_64_epochs_30_wd_0.001_opt_adamw_autoaug,3504.78
