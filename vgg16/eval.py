@@ -36,7 +36,7 @@ def evaluate_all_models(tuning_hyperparameters):
             print(f"Confusion Matrix:\n{results['cm']}")
 
 def main():
-    tuning_hyperparameters = "bs"
+    tuning_hyperparameters = "aug"
     evaluate_all_models(tuning_hyperparameters)
 
 if __name__ == "__main__":

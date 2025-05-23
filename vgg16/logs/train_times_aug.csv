@@ -1,0 +1,10 @@
+label,duration_seconds,early_stop_epoch
+aug_none,517.05,15
+aug_flip,558.39,16
+aug_crop,510.77,15
+aug_flip_crop,554.65,16
+aug_flip_crop_jitter,517.25,15
+aug_flip_crop_erasing,587.4,17
+aug_autoaugment,624.22,18
+aug_random_combo,587.41,17
+aug_random_only,553.79,16
